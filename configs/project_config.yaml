@@ -1,0 +1,32 @@
+paths:
+  letter_train_dir: data/raw/asl_alphabet/asl_alphabet_train
+  custom_letter_train_dir: data/raw/custom_letters
+  letter_checkpoint: models/checkpoints/letter_classifier.pt
+  custom_letter_checkpoint: models/checkpoints/letter_classifier_custom.pt
+  letter_labels: models/labels/letter_labels.json
+
+training:
+  seed: 42
+  model_name: efficientnet_b3
+  image_size: 224
+  batch_size: 32
+  num_workers: 0
+  epochs_letters: 10
+  fine_tune_epochs_letters: 4
+  learning_rate_letters: 0.00025
+  learning_rate_fine_tune: 0.00008
+  weight_decay: 0.0001
+  validation_split: 0.15
+
+runtime:
+  camera_index: 0
+  letter_confidence_threshold: 0.92
+  top2_margin_threshold: 0.10
+  smoothing_window: 10
+  stable_vote_min_count: 6
+  repeat_letter_cooldown_frames: 18
+  frames_without_hand_to_finalize_word: 20
+  frames_without_hand_to_finalize_sentence: 60
+  max_history_items: 10
+  text_to_speech_enabled: true
+  custom_capture_images_per_letter: 50
