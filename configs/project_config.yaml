@@ -1,5 +1,6 @@
 paths:
   letter_train_dir: data/raw/asl_alphabet/asl_alphabet_train
+  guide_image_dir: assets/guide_images
   custom_letter_train_dir: data/raw/custom_letters
   letter_checkpoint: models/checkpoints/letter_classifier.pt
   custom_letter_checkpoint: models/checkpoints/letter_classifier_custom.pt

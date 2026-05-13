@@ -1,6 +1,6 @@
 # ASL Alphabet Translator
 
-This project is a webcam-based ASL alphabet translator made for the TSA Software Development event. It recognizes ASL fingerspelling one letter at a time, builds words on screen, stores completed output in a history view, and includes a letter guide and practice area. The project is deliberately focused on alphabet recognition instead of full ASL sentence translation so the final result stays accurate, realistic, and manageable.
+This project is a webcam-based ASL alphabet translator made for the TSA Software Development event. It recognizes ASL fingerspelling one letter at a time, builds words and sentences on screen, stores completed output in a history view, and includes a letter guide and practice area. The project is purposefully focused on alphabet recognition instead of full ASL word translation in order to keep the software more accurate and efficient.
 
 ## Software Requirements
 
@@ -14,16 +14,30 @@ Python `3.11.9` is the recommended version for this project because it works wel
 
 ```text
 SoftwareDevelopment2225-1/
+  .gitignore
   README.md
-  requirements.txt
   app.py
-  tsa_work_log.html
-  project_runtime_code_bundle.txt
+  requirements.txt
+  TSA Student Copyright Checklist.pdf
+  assets/
+    guide_images/
+      A/
+        sample.jpg
+      B/
+        sample.jpg
+      ...
+      Z/
+        sample.jpg
+      space/
+        sample.jpg
+      del/
+        sample.jpg
   configs/
     project_config.yaml
   data/
     raw/
       asl_alphabet/
+        asl_alphabet_train/
       custom_letters/
   models/
     checkpoints/
@@ -37,6 +51,7 @@ SoftwareDevelopment2225-1/
     capture_all_custom_letters.py
     fine_tune_letters.py
   src/
+    __init__.py
     asl_translator/
       __init__.py
       config.py
@@ -78,7 +93,7 @@ Running the app does not retrain the model. It uses the existing checkpoint file
 3. The system tracks the hand, predicts the current letter, and adds stable letters into the current word.
 4. Use the `space` sign or lower your hand briefly to finish a word.
 5. Use the `del` sign to remove the most recent letter.
-6. Watch the `Current word` and `Sentence` sections as the text builds live.
+6. Watch the `Current Word and Sentence` sections as the text builds live.
 7. Open the history page to review completed words.
 8. Use the letter guide on the right side to click a letter and view a sample image.
 9. Use the practice box to type a letter or word and step through the matching signs.

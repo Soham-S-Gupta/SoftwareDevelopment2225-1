@@ -36,13 +36,20 @@ def main() -> None:
 
         cv2.imshow(WINDOW_NAME, display)
         key = cv2.waitKey(1) & 0xFF
+        try:
+            if cv2.getWindowProperty(WINDOW_NAME, cv2.WND_PROP_VISIBLE) < 1:
+                break
+        except cv2.error:
+            break
         ui.handle_key(key)
 
         if ui.state.clear_requested:
             pipeline.clear_text()
+            last_result = None
             ui.state.clear_requested = False
         if ui.state.clear_history_requested:
             pipeline.clear_history()
+            last_result = None
             ui.state.clear_history_requested = False
         if ui.state.should_quit:
             break

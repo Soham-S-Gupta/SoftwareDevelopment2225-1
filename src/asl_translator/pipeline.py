@@ -111,14 +111,15 @@ class ASLTranslatorPipeline:
             return
 
         self.current_sentence.append(word)
-        self.completed_items.append(word)
         self.current_word = ""
 
-        if self.runtime["text_to_speech_enabled"] and word != self.last_spoken_word:
-            self.speech.speak(word)
-            self.last_spoken_word = word
-
     def _finalize_sentence(self) -> None:
+        sentence = " ".join(self.current_sentence).strip().upper()
+        if sentence:
+            self.completed_items.append(sentence)
+            if self.runtime["text_to_speech_enabled"] and sentence != self.last_spoken_word:
+                self.speech.speak(sentence)
+                self.last_spoken_word = sentence
         self.current_word = ""
         self.current_sentence.clear()
         self.frames_without_hand = 0
