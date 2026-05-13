@@ -73,7 +73,7 @@ class ASLTranslatorPipeline:
             "current_word": self.current_word,
             "current_sentence": current_sentence,
             "history": list(self.completed_items),
-            "latest_word": self._latest_completed_word_or_phrase(),
+            "latest_word": self._latest_text(),
             "letter_prediction": letter_prediction,
             "live_status": self._build_live_status(letter_prediction, hand_found),
             "models_ready": {"letters": self.letter_model is not None},
@@ -124,7 +124,7 @@ class ASLTranslatorPipeline:
         self.current_sentence.clear()
         self.frames_without_hand = 0
 
-    def _latest_completed_word_or_phrase(self) -> str:
+    def _latest_text(self) -> str:
         if self.current_word:
             return self.current_word.upper()
         if self.completed_items:
@@ -146,8 +146,7 @@ class ASLTranslatorPipeline:
         top_k = prediction.get("top_k", [])
         if len(top_k) >= 2:
             margin = top_k[0]["confidence"] - top_k[1]["confidence"]
-            if margin < self.runtime["top2_margin_threshold"]:
-                return True
+            return margin < self.runtime["top2_margin_threshold"]
         return False
 
     @staticmethod

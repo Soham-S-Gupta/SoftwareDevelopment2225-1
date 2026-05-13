@@ -174,14 +174,12 @@ class TranslatorUI:
         guide_images: dict[str, np.ndarray | None] = {}
         for label in self.guide_order:
             folder = train_dir / label
-            image = None
-            if folder.exists():
-                files = sorted(
-                    [path for path in folder.iterdir() if path.suffix.lower() in {".jpg", ".jpeg", ".png"}]
-                )
-                if files:
-                    image = cv2.imread(str(files[0]))
-            guide_images[label] = image
+            if not folder.exists():
+                guide_images[label] = None
+                continue
+
+            files = sorted(path for path in folder.iterdir() if path.suffix.lower() in {".jpg", ".jpeg", ".png"})
+            guide_images[label] = cv2.imread(str(files[0])) if files else None
         return guide_images
 
     def _draw_header(self, canvas: np.ndarray, camera_width: int, result: dict | None) -> None:
@@ -264,7 +262,7 @@ class TranslatorUI:
         if self.state.guide_mode == "detail" and self.state.selected_letter:
             self._draw_button(canvas, UIButton("guide_back", (left, 48, left + 90, 84), "Back", ACCENT))
             label = self.state.selected_letter
-            cv2.putText(canvas, f"Showing: {self._display_label(label)}", (left + 110, 74), cv2.FONT_HERSHEY_SIMPLEX, 0.72, WARNING, 2)
+            cv2.putText(canvas, f"Showing: {label.upper()}", (left + 110, 74), cv2.FONT_HERSHEY_SIMPLEX, 0.72, WARNING, 2)
             self._draw_guide_image(canvas, label, left, 108, right - left, total_height - 140)
         else:
             self._put_wrapped_text(canvas, "Click on any letter to see how it's signed.", left, 62, right - left - 4, 16, 0.48, MUTED, thickness=1)
@@ -282,7 +280,7 @@ class TranslatorUI:
                 button = UIButton(
                     name=f"guide_{label}",
                     rect=(x1, y1, x1 + button_w, y1 + button_h),
-                    label=self._display_label(label),
+                    label=label.upper(),
                     fill=CARD_BG,
                 )
                 self._draw_button(canvas, button)
@@ -294,7 +292,7 @@ class TranslatorUI:
                 grid_bottom = start_y + rows * (button_h + gap) - gap
                 title_y = min(max(grid_bottom + 36, int(total_height * 0.45)), total_height - 150)
                 cv2.putText(canvas, "Practice guide", (left, title_y), cv2.FONT_HERSHEY_SIMPLEX, 0.76, ACCENT, 2)
-                cv2.putText(canvas, f"Showing: {self._display_label(current_char)}", (left, title_y + 26), cv2.FONT_HERSHEY_SIMPLEX, 0.66, WARNING, 2)
+                cv2.putText(canvas, f"Showing: {current_char.upper()}", (left, title_y + 26), cv2.FONT_HERSHEY_SIMPLEX, 0.66, WARNING, 2)
                 image_top = title_y + 44
                 image_height = max(80, total_height - image_top - 78)
                 self._draw_guide_image(canvas, current_char, left, image_top, right - left, image_height)
@@ -384,8 +382,8 @@ class TranslatorUI:
         x1 = (canvas.shape[1] - box_w) // 2
         y1 = (canvas.shape[0] - box_h) // 2
         cv2.rectangle(canvas, (x1, y1), (x1 + box_w, y1 + box_h), CARD_BG, -1)
-        title_scale = self._clamp_float(box_w / 600, 0.95, 1.18)
-        subtitle_scale = self._clamp_float(box_w / 700, 0.78, 1.02)
+        title_scale = max(0.95, min(box_w / 600, 1.18))
+        subtitle_scale = max(0.78, min(box_w / 700, 1.02))
         cv2.putText(canvas, "ASL Alphabet Translator", (x1 + 48, y1 + int(box_h * 0.25)), cv2.FONT_HERSHEY_SIMPLEX, title_scale, TEXT, 2)
         cv2.putText(canvas, "Press Start to begin scanning.", (x1 + 48, y1 + int(box_h * 0.43)), cv2.FONT_HERSHEY_SIMPLEX, subtitle_scale, MUTED, 2)
         button_w, button_h = 200, 56
@@ -395,10 +393,6 @@ class TranslatorUI:
 
     @staticmethod
     def _clamp(value: int, minimum: int, maximum: int) -> int:
-        return max(minimum, min(value, maximum))
-
-    @staticmethod
-    def _clamp_float(value: float, minimum: float, maximum: float) -> float:
         return max(minimum, min(value, maximum))
 
     @staticmethod
@@ -425,10 +419,6 @@ class TranslatorUI:
         width = cv2.getTextSize(candidate or "(type here)", cv2.FONT_HERSHEY_SIMPLEX, 0.78, 2)[0][0]
         if width <= self.practice_text_max_width:
             self.state.practice_text = candidate
-
-    @staticmethod
-    def _display_label(label: str) -> str:
-        return label.upper() if len(label) == 1 else label.upper()
 
     def _put_wrapped_text(
         self,
